@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ site_name }}{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}{{ site_name }} - Your one-stop shop{% endblock %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header class="site-header">
+        <nav class="main-nav">
+            <div class="container">
+                <a href="/" class="logo">{{ site_name }}</a>
+                <div class="nav-links">
+                    <a href="/products/">Products</a>
+                    <a href="/categories/">Categories</a>
+                    <a href="/deals/">Deals</a>
+                </div>
+                <div class="nav-actions">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search products..." id="search-input">
+                    </div>
+                    <a href="/cart/" class="cart-link">
+                        Cart (<span class="cart-count">{{ cart_count }}</span>)
+                    </a>
+                    {% if user.is_authenticated %}
+                        <a href="/account/" class="account-link">{{ user.first_name }}</a>
+                        <a href="/logout/" class="logout-link">Logout</a>
+                    {% else %}
+                        <a href="/login/" class="login-link">Login</a>
+                        <a href="/register/" class="register-link">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="site-main">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>{{ site_name }}</h4>
+                    <p>{{ site_tagline }}</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Shop</h4>
+                    <a href="/products/">All Products</a>
+                    <a href="/categories/">Categories</a>
+                    <a href="/deals/">Deals</a>
+                    <a href="/new-arrivals/">New Arrivals</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Account</h4>
+                    <a href="/account/">My Account</a>
+                    <a href="/orders/">Order History</a>
+                    <a href="/wishlist/">Wishlist</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <a href="/pages/faq/">FAQ</a>
+                    <a href="/pages/shipping/">Shipping Info</a>
+                    <a href="/pages/returns/">Returns</a>
+                    <a href="/contact/">Contact Us</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 {{ site_name }}. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
