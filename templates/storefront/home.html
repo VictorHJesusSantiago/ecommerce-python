@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ site_name }} - Home{% endblock %}
+{% block content %}
+<section class="hero-banner">
+    <div class="container">
+        <h1>Welcome to {{ site_name }}</h1>
+        <p>Discover amazing products at great prices</p>
+        <a href="/products/" class="btn btn-primary">Shop Now</a>
+    </div>
+</section>
+<section class="featured-products">
+    <div class="container">
+        <h2>Featured Products</h2>
+        <div class="product-grid">
+            {% for product in featured_products %}
+            <div class="product-card">
+                {% if product.primary_image %}
+                    <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}">
+                {% endif %}
+                <h3>{{ product.name }}</h3>
+                <p class="price">${{ product.price }}</p>
+                {% if product.is_on_sale %}
+                    <span class="sale-badge">{{ product.discount_percentage }}% OFF</span>
+                {% endif %}
+                <a href="/products/{{ product.slug }}/" class="btn">View Details</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+<section class="categories-section">
+    <div class="container">
+        <h2>Shop by Category</h2>
+        <div class="category-grid">
+            {% for category in categories %}
+            <div class="category-card">
+                {% if category.image %}
+                    <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                {% endif %}
+                <h3>{{ category.name }}</h3>
+                <p>{{ category.product_count }} products</p>
+                <a href="/categories/{{ category.slug }}/">Shop Now</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+<section class="newsletter-section">
+    <div class="container">
+        <h2>Subscribe to Our Newsletter</h2>
+        <p>Get the latest updates on new products and upcoming sales</p>
+        <form method="post" action="/api/v1/newsletters/subscribe/">
+            <input type="email" name="email" placeholder="Enter your email" required>
+            <button type="submit" class="btn btn-primary">Subscribe</button>
+        </form>
+    </div>
+</section>
+{% endblock %}
