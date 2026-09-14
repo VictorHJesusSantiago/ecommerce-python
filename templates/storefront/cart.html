@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static humanize %}
+{% block title %}Shopping Cart - {{ site_name }}{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Shopping Cart</h1>
+    {% if cart.items.all %}
+    <div class="cart-page">
+        <div class="cart-items">
+            {% for item in cart.items.all %}
+            <div class="cart-item" data-item-id="{{ item.id }}">
+                <div class="item-image">
+                    {% if item.product.images.first %}
+                        <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}">
+                    {% endif %}
+                </div>
+                <div class="item-details">
+                    <h3><a href="/products/{{ item.product.slug }}/">{{ item.product.name }}</a></h3>
+                    {% if item.variant %}
+                        <p class="variant">{{ item.variant.name }}</p>
+                    {% endif %}
+                    <p class="price">${{ item.unit_price }}</p>
+                </div>
+                <div class="item-quantity">
+                    <button class="qty-btn minus" data-action="decrease">-</button>
+                    <input type="number" class="qty-input" value="{{ item.quantity }}" min="1" max="99" data-item="{{ item.id }}">
+                    <button class="qty-btn plus" data-action="increase">+</button>
+                </div>
+                <div class="item-total">
+                    <p>${{ item.line_total }}</p>
+                </div>
+                <button class="remove-item" data-item="{{ item.id }}">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="cart-summary">
+            <h2>Order Summary</h2>
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>${{ cart.subtotal }}</span>
+            </div>
+            {% if cart.discount_amount %}
+            <div class="summary-row discount">
+                <span>Discount</span>
+                <span>-${{ cart.discount_amount }}</span>
+            </div>
+            {% endif %}
+            <div class="summary-row total">
+                <span>Total</span>
+                <span>${{ cart.total }}</span>
+            </div>
+            <div class="coupon-form">
+                <input type="text" id="coupon-code" placeholder="Coupon code">
+                <button class="btn" id="apply-coupon">Apply</button>
+            </div>
+            <a href="/checkout/" class="btn btn-primary btn-lg btn-block">Proceed to Checkout</a>
+            <a href="/products/" class="btn btn-outline">Continue Shopping</a>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-cart">
+        <h2>Your cart is empty</h2>
+        <p>Looks like you haven't added anything to your cart yet.</p>
+        <a href="/products/" class="btn btn-primary">Start Shopping</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

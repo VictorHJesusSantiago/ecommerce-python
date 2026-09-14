@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Checkout - {{ site_name }}{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Checkout</h1>
+    <form method="post" action="/api/v1/orders/" class="checkout-form">
+        {% csrf_token %}
+        <div class="checkout-grid">
+            <div class="checkout-section">
+                <h2>Shipping Address</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name *</label>
+                        <input type="text" name="shipping_first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name *</label>
+                        <input type="text" name="shipping_last_name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Company</label>
+                    <input type="text" name="shipping_company">
+                </div>
+                <div class="form-group">
+                    <label>Address Line 1 *</label>
+                    <input type="text" name="shipping_address_line1" required>
+                </div>
+                <div class="form-group">
+                    <label>Address Line 2</label>
+                    <input type="text" name="shipping_address_line2">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>City *</label>
+                        <input type="text" name="shipping_city" required>
+                    </div>
+                    <div class="form-group">
+                        <label>State *</label>
+                        <input type="text" name="shipping_state" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Postal Code *</label>
+                        <input type="text" name="shipping_postal_code" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Country *</label>
+                        <select name="shipping_country" required>
+                            <option value="US">United States</option>
+                            <option value="CA">Canada</option>
+                            <option value="UK">United Kingdom</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" name="shipping_phone">
+                </div>
+            </div>
+            <div class="checkout-section">
+                <h2>Payment Method</h2>
+                <div class="payment-methods">
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="credit_card" checked>
+                        <span>Credit Card</span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="paypal">
+                        <span>PayPal</span>
+                    </label>
+                </div>
+                <div id="credit-card-form" class="payment-form">
+                    <div class="form-group">
+                        <label>Card Number</label>
+                        <input type="text" name="card_number" placeholder="1234 5678 9012 3456">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Expiry Date</label>
+                            <input type="text" name="card_expiry" placeholder="MM/YY">
+                        </div>
+                        <div class="form-group">
+                            <label>CVV</label>
+                            <input type="text" name="card_cvv" placeholder="123">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="order-summary-section">
+            <h2>Order Summary</h2>
+            <div class="order-items">
+                {% for item in cart.items.all %}
+                <div class="order-item">
+                    <span>{{ item.quantity }}x {{ item.product.name }}</span>
+                    <span>${{ item.line_total }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>${{ cart.subtotal }}</span>
+            </div>
+            {% if cart.discount_amount %}
+            <div class="summary-row discount">
+                <span>Discount</span>
+                <span>-${{ cart.discount_amount }}</span>
+            </div>
+            {% endif %}
+            <div class="summary-row shipping">
+                <span>Shipping</span>
+                <span>${{ shipping_cost|default:"5.99" }}</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total</span>
+                <span>${{ cart.total }}</span>
+            </div>
+        </div>
+        <div class="checkout-actions">
+            <label class="checkbox-label">
+                <input type="checkbox" name="billing_same_as_shipping" checked> Billing address same as shipping
+            </label>
+            <div class="form-group">
+                <label>Order Notes (optional)</label>
+                <textarea name="customer_notes" rows="3" placeholder="Any special instructions?"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg">Place Order</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
