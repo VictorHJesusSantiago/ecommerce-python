@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Products - {{ site_name }}{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="products-page">
+        <aside class="filters-sidebar">
+            <h3>Filters</h3>
+            <form method="get" action="" class="filter-form">
+                <div class="filter-group">
+                    <label>Category</label>
+                    <select name="category">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Brand</label>
+                    <select name="brand">
+                        <option value="">All Brands</option>
+                        {% for brand in brands %}
+                            <option value="{{ brand.id }}">{{ brand.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Price Range</label>
+                    <input type="number" name="min_price" placeholder="Min" step="0.01">
+                    <input type="number" name="max_price" placeholder="Max" step="0.01">
+                </div>
+                <div class="filter-group">
+                    <label>Rating</label>
+                    <select name="rating">
+                        <option value="">All Ratings</option>
+                        <option value="4">4+ Stars</option>
+                        <option value="3">3+ Stars</option>
+                        <option value="2">2+ Stars</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>
+                        <input type="checkbox" name="in_stock" value="true"> In Stock Only
+                    </label>
+                </div>
+                <div class="filter-group">
+                    <label>
+                        <input type="checkbox" name="on_sale" value="true"> On Sale
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+            </form>
+        </aside>
+        <div class="products-main">
+            <div class="products-header">
+                <h1>Products</h1>
+                <div class="sort-options">
+                    <select name="sort_by" onchange="this.form.submit()">
+                        <option value="newest">Newest</option>
+                        <option value="price_asc">Price: Low to High</option>
+                        <option value="price_desc">Price: High to Low</option>
+                        <option value="rating">Top Rated</option>
+                        <option value="popular">Best Selling</option>
+                    </select>
+                </div>
+            </div>
+            <div class="product-grid">
+                {% for product in products %}
+                <div class="product-card">
+                    {% if product.primary_image %}
+                        <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}">
+                    {% endif %}
+                    {% if product.brand %}
+                        <span class="brand-badge">{{ product.brand.name }}</span>
+                    {% endif %}
+                    <h3><a href="/products/{{ product.slug }}/">{{ product.name }}</a></h3>
+                    <div class="product-rating">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= product.rating_avg %}
+                                <span class="star filled">&#9733;</span>
+                            {% else %}
+                                <span class="star">&#9734;</span>
+                            {% endif %}
+                        {% endfor %}
+                        <span>({{ product.rating_count }})</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="current-price">${{ product.price }}</span>
+                        {% if product.is_on_sale %}
+                            <span class="original-price">${{ product.compare_at_price }}</span>
+                            <span class="discount-badge">{{ product.discount_percentage }}% OFF</span>
+                        {% endif %}
+                    </div>
+                    <button class="btn add-to-cart" data-product="{{ product.id }}">Add to Cart</button>
+                </div>
+                {% empty %}
+                <div class="no-results">
+                    <h3>No products found</h3>
+                    <p>Try adjusting your filters</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% if is_paginated %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}">&laquo; Previous</a>
+                {% endif %}
+                <span class="current-page">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">Next &raquo;</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

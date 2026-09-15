@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ product.name }} - {{ site_name }}{% endblock %}
+{% block content %}
+<div class="container">
+    <nav class="breadcrumb">
+        <a href="/">Home</a>
+        <a href="/categories/">Categories</a>
+        {% if product.category %}
+            <a href="/categories/{{ product.category.slug }}/">{{ product.category.name }}</a>
+        {% endif %}
+        <span>{{ product.name }}</span>
+    </nav>
+    <div class="product-detail">
+        <div class="product-gallery">
+            <div class="main-image">
+                {% if product.images.first %}
+                    <img src="{{ product.images.first.image.url }}" alt="{{ product.images.first.alt_text|default:product.name }}" id="main-product-image">
+                {% endif %}
+            </div>
+            <div class="thumbnail-gallery">
+                {% for image in product.images.all %}
+                    <img src="{{ image.image.url }}" alt="{{ image.alt_text }}" class="thumbnail" onclick="changeMainImage('{{ image.image.url }}')">
+                {% endfor %}
+            </div>
+        </div>
+        <div class="product-info">
+            {% if product.brand %}
+                <span class="brand">{{ product.brand.name }}</span>
+            {% endif %}
+            <h1>{{ product.name }}</h1>
+            <div class="product-rating">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= product.rating_avg %}
+                        <span class="star filled">&#9733;</span>
+                    {% else %}
+                        <span class="star">&#9734;</span>
+                    {% endif %}
+                {% endfor %}
+                <span>{{ product.rating_avg }} ({{ product.rating_count }} reviews)</span>
+            </div>
+            <div class="product-price">
+                <span class="current-price">${{ product.price }}</span>
+                {% if product.is_on_sale %}
+                    <span class="original-price">${{ product.compare_at_price }}</span>
+                    <span class="discount-badge">{{ product.discount_percentage }}% OFF</span>
+                {% endif %}
+            </div>
+            <div class="product-description">
+                {{ product.description|safe }}
+            </div>
+            {% if product.variants.all %}
+            <div class="variant-selector">
+                <label>Variants:</label>
+                <select id="variant-select">
+                    {% for variant in product.variants.all %}
+                        <option value="{{ variant.id }}" data-price="{{ variant.price }}" data-stock="{{ variant.quantity }}">
+                            {{ variant.name }} - ${{ variant.price }}
+                            {% if not variant.is_in_stock %}(Out of Stock){% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            <div class="stock-status">
+                {% if product.is_in_stock %}
+                    <span class="in-stock">In Stock</span>
+                {% else %}
+                    <span class="out-of-stock">Out of Stock</span>
+                {% endif %}
+            </div>
+            <div class="add-to-cart-section">
+                <label>Quantity:</label>
+                <input type="number" id="quantity" value="1" min="1" max="99">
+                <button class="btn btn-primary btn-lg" id="add-to-cart-btn" data-product="{{ product.id }}">
+                    Add to Cart
+                </button>
+            </div>
+            <div class="product-meta">
+                <p><strong>SKU:</strong> {{ product.sku }}</p>
+                {% if product.weight %}
+                    <p><strong>Weight:</strong> {{ product.weight }} kg</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="product-tabs">
+        <div class="tabs-header">
+            <button class="tab-btn active" data-tab="description">Description</button>
+            <button class="tab-btn" data-tab="attributes">Attributes</button>
+            <button class="tab-btn" data-tab="reviews">Reviews ({{ product.rating_count }})</button>
+        </div>
+        <div class="tab-content active" id="description">
+            {{ product.description|safe }}
+        </div>
+        <div class="tab-content" id="attributes" style="display:none;">
+            <table class="attributes-table">
+                {% for attr in product.attribute_values.all %}
+                    <tr>
+                        <td>{{ attr.attribute.name }}</td>
+                        <td>{{ attr.value }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="tab-content" id="reviews" style="display:none;">
+            <div class="review-summary">
+                <span class="avg-rating">{{ product.rating_avg }}</span>
+                <span class="total-reviews">{{ product.rating_count }} reviews</span>
+            </div>
+            <div id="reviews-list"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
